@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyTech Solutions - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<style> 
+/* General Body Styling */
+body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    /* Header Styling */
+    header {
+      background-color: #4d4d4d;
+      color: #ff7f50;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header .logo img {
+      width: 60px;
+      height: 60px;
+      vertical-align: middle;
+    }
+
+    header h1 {
+      display: inline-block;
+      margin-left: 20px;
+      font-size: 24px;
+      vertical-align: middle;
+    }
+
+    /* Login Page Styling */
+    .login-container {
+      background-color: #fff;
+      width: 350px;
+      padding: 20px;
+      margin: 100px auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #ff7f50;
+    }
+
+    .login-container label {
+      font-weight: bold;
+      color: #4d4d4d;
+    }
+
+    .login-container input, 
+    .login-container select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .login-container button {
+      background-color: #ff7f50;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .login-container button:hover {
+      background-color: #e5653f;
+    }
+
+    #login-message {
+      color: red;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* Dashboard General Styling */
+    .dashboard {
+      max-width: 1200px;
+      margin: 50px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard h2 {
+      color: #ff7f50;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    button {
+      background-color: #ff7f50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #e5653f;
+    }
+
+    button#logoutAdmin, button#logoutEmployee {
+      display: block;
+      margin: 20px auto;
+    }
+
+    /* Attendance Table Styling */
+    .attendance-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .attendance-table th, .attendance-table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    .attendance-table th {
+      background-color: #ff7f50;
+      color: white;
+    }
+
+    .attendance-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Responsive Styling */
+    @media (max-width: 768px) {
+      .dashboard {
+        padding: 20px;
+      }
+    }
+  </style>
+<body>
+  <!-- Logo and company name -->
+  <header>
+    <div class="logo">
+      <img src="mytech.png"  alt="Company Logo">
+    </div>
+    <h1>Welcome to MyTech </h1>
+  </header>
+
+  <!-- Login Form -->
+  <div id="login-page" class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="Enter username" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+      <label for="role">Role:</label>
+      <select id="role" required>
+        <option value="admin">Admin</option>
+        <option value="employee">Employee</option>
+      </select>
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-message"></p>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="admin-dashboard" class="dashboard hidden">
+    <h2>Admin Dashboard</h2>
+    <div>
+      <p><strong>Total Teams:</strong> <span id="total-teams"></span></p>
+      <p><strong>Total Members:</strong> <span id="total-members"></span></p>
+      <p><strong>Active Projects:</strong> <span id="active-projects"></span></p>
+    </div>
+    <div id="teams">
+      <!-- Dynamic team details here -->
+    </div>
+    <button id="logoutAdmin">Logout</button>
+  </div>
+
+  <!-- Employee Dashboard -->
+  <div id="employee-dashboard" class="dashboard hidden">
+    <h2>Employee Dashboard</h2>
+    <div id="employee-info">
+      <!-- Dynamic employee details here -->
+    </div>
+    <button id="logoutEmployee">Logout</button>
+  </div>
+
+  <script>
+    // Teams and Members Data
+const teams = [
+  {
+    name: "Team Alpha",
+    leader: "Alice",
+    members: [
+      { name: "Alice", role: "Developer", progress: 80, task: "Project A" },
+      { name: "Bob", role: "Designer", progress: 60, task: "Project B" },
+      { name: "Charlie", role: "Tester", progress: 50, task: "Project C" },
+      { name: "Diana", role: "Developer", progress: 90, task: "Project D" },
+    ],
+    activeProjects: 3,
+  },
+  {
+    name: "Team Beta",
+    leader: "Harry",
+    members: [
+      { name: "Eve", role: "Developer", progress: 75, task: "Project E" },
+      { name: "Frank", role: "Tester", progress: 40, task: "Project F" },
+      { name: "Grace", role: "Designer", progress: 65, task: "Project G" },
+      { name: "Harry", role: "Developer", progress: 85, task: "Project H" },
+    ],
+    activeProjects: 2,
+  },
+  {
+    name: "Team Gamma",
+    leader: "Jatin",
+    members: [
+      { name: "Jatin", role: "Developer", progress: 90, task: "Project I" },
+      { name: "Jack", role: "Designer", progress: 80, task: "Project J" },
+      { name: "Kate", role: "Tester", progress: 70, task: "Project K" },
+      { name: "Leo", role: "Developer", progress: 85, task: "Project L" },
+    ],
+    activeProjects: 4,
+  },
+  {
+    name: "Team Delta",
+    leader: "Nikhil",
+    members: [
+      { name: "John", role: "Developer", progress: 85, task: "Project M" },
+      { name: "Oscar", role: "Tester", progress: 75, task: "Project N" },
+      { name: "Pam", role: "Designer", progress: 60, task: "Project O" },
+      { name: "Nikhil", role: "Developer", progress: 95, task: "Project P" },
+    ],
+    activeProjects: 3,
+  },
+];
+
+// Login Functionality
+const loginForm = document.getElementById("loginForm");
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const role = document.getElementById("role").value;
+
+  const adminCredentials = { username: "admin", password: "admin123" };
+  const employeeCredentials = {
+    Alice: "alice123",
+    Bob: "bob123",
+    Charlie:"charlie123",
+    Diana:"Diana",
+    Grace:"grace",
+    Eve: "eve123",
+    Frank: "frank123",
+    Grace:"grace",
+    Harry:"harry",
+    Jatin: "jatin123",
+    Jack: "jack123",
+    Kate: "kate123",
+    Leo: "leo123",
+    John: "john123",
+    Oscar: "oscar123",
+    Pam: "pam123",
+    Nikhil: "nikhil123",
+  };
+
+  if (role === "admin" && username === adminCredentials.username && password === adminCredentials.password) {
+    showAdminDashboard();
+  } else if (role === "employee" && employeeCredentials[username] === password) {
+    showEmployeeDashboard(username);
+  } else {
+    document.getElementById("login-message").innerText = "Invalid credentials!";
+  }
+});
+
+function showAdminDashboard() {
+  document.getElementById("login-page").classList.add("hidden");
+  document.getElementById("admin-dashboard").classList.remove("hidden");
+
+  const totalTeams = teams.length;
+  const totalMembers = teams.reduce((sum, team) => sum + team.members.length, 0);
+  const activeProjects = teams.reduce((sum, team) => sum + team.activeProjects, 0);
+
+  document.getElementById("total-teams").innerText = totalTeams;
+  document.getElementById("total-members").innerText = totalMembers;
+  document.getElementById("active-projects").innerText = activeProjects;
+
+  const teamsContainer = document.getElementById("teams");
+  teamsContainer.innerHTML = ""; // Clear previous data
+  teams.forEach((team, teamIndex) => {
+    const teamDiv = document.createElement("div");
+    teamDiv.className = "team";
+    teamDiv.innerHTML = `
+      <h3>${team.name}</h3>
+      <p><strong>Leader:</strong> ${team.leader}</p>
+      <button onclick="showTeamMembers(${teamIndex})">View Members</button>
+      <div id="members-${teamIndex}" class="members hidden"></div>
+    `;
+    teamsContainer.appendChild(teamDiv);
+  });
+}
+
+function showTeamMembers(teamIndex) {
+  const membersDiv = document.getElementById(`members-${teamIndex}`);
+  const team = teams[teamIndex];
+
+  if (membersDiv.classList.contains("hidden")) {
+    let membersInfo = "<ul>";
+    team.members.forEach((member, memberIndex) => {
+      membersInfo += `
+        <li>
+          <strong><a href="javascript:void(0)" onclick="showMemberDetail(${teamIndex}, ${memberIndex})">${member.name}</a></strong> - ${member.role} - Progress: ${member.progress}%
+        </li>`;
+    });
+    membersInfo += "</ul>";
+    membersDiv.innerHTML = membersInfo;
+    membersDiv.classList.remove("hidden");
+  } else {
+    membersDiv.classList.add("hidden");
+  }
+}
+
+function showMemberDetail(teamIndex, memberIndex) {
+  const member = teams[teamIndex].members[memberIndex];
+  alert(`Name: ${member.name}\nRole: ${member.role}\nTask: ${member.task}\nProgress: ${member.progress}%`);
+}
+
+function showEmployeeDashboard(username) {
+  document.getElementById("login-page").classList.add("hidden");
+  document.getElementById("employee-dashboard").classList.remove("hidden");
+
+  const employeeInfo = document.getElementById("employee-info");
+  employeeInfo.innerHTML = ""; // Clear any previous data
+
+  teams.forEach((team) => {
+    team.members.forEach((member) => {
+      if (member.name.toLowerCase() === username.toLowerCase()) {
+        const employeeDiv = document.createElement("div");
+        employeeDiv.className = "employee";
+        employeeDiv.innerHTML = `
+          <h3>${member.name}</h3>
+          <p><strong>Team:</strong> ${team.name}</p>
+          <p><strong>Role:</strong> ${member.role}</p>
+          <p><strong>Task:</strong> ${member.task}</p>
+          <p><strong>Progress:</strong> ${member.progress}%</p>
+        `;
+        employeeInfo.appendChild(employeeDiv);
+      }
+    });
+  });
+}
+
+// Logout
+document.getElementById("logoutAdmin").addEventListener("click", () => {
+  location.reload();
+});
+
+document.getElementById("logoutEmployee").addEventListener("click", () => {
+  location.reload();
+});
+
+  </script>
+</body>
+</html>
